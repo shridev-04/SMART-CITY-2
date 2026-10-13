@@ -1,0 +1,5 @@
+requests>=2.28.0
+# For official Raspberry Pi Camera Module:
+# install via apt: sudo apt install python3-picamera2
+# Or for USB Webcam fallback:
+# opencv-python-headless>=4.7.0
