@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: smart-city-ai
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    plan: free
+    autoDeploy: true

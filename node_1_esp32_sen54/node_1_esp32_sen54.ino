@@ -30,7 +30,7 @@ const char* WIFI_SSID     = "SHRIDEV";
 const char* WIFI_PASSWORD = "1234567898";
 
 // Replace with your Vercel deployment URL (e.g., https://your-project.vercel.app/telemetry)
-const char* BACKEND_URL   = "https://smart-city-kappa-three.vercel.app/telemetry";
+const char* BACKEND_URL   = "https://smart-city-r3hp.onrender.com/telemetry";
 const char* DEVICE_TOKEN  = "SHRIDEV";
 
 // ============================================================
@@ -235,17 +235,17 @@ bool readAndUploadTelemetry() {
   while ((millis() - retryStart) < 15000) {
     connectWiFi();
     if (WiFi.status() == WL_CONNECTED) {
+      WiFiClientSecure secureClient;
+      WiFiClient plainClient;
       HTTPClient http;
       http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
       http.setTimeout(12000);
 
       bool began = false;
       if (String(BACKEND_URL).startsWith("https://")) {
-        WiFiClientSecure secureClient;
         secureClient.setInsecure(); // Skip TLS certificate check
         began = http.begin(secureClient, BACKEND_URL);
       } else {
-        WiFiClient plainClient;
         began = http.begin(plainClient, BACKEND_URL);
       }
 
@@ -262,7 +262,9 @@ bool readAndUploadTelemetry() {
           break;
         }
 
-        Serial.printf("[HTTP ERROR] Attempt %d failed with code %d. Retrying...\n", attempt, httpCode);
+        String errResponse = http.getString();
+        Serial.printf("[HTTP ERROR] Attempt %d failed with code %d. Server says: %s\n", attempt, httpCode, errResponse.c_str());
+        http.end();
       }
     }
     attempt++;

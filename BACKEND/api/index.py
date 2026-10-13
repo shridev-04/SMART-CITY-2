@@ -712,7 +712,8 @@ def get_dashboard_data():
     nodes_info = {}
     expected = [
         {"id": "node_1_sen54", "name": "Node 1 - SEN54 Air Quality & Climate", "type": "SEN54"},
-        {"id": "node_2_camera", "name": "Node 2 - Raspberry Pi Street Vision", "type": "CAMERA_VISION"}
+        {"id": "node_2_camera", "name": "Node 2 - Raspberry Pi Street Vision", "type": "CAMERA_VISION"},
+        {"id": "node_3_drain_mq135", "name": "Node 3 - Nala Drain Probes & MQ-135", "type": "MQ135_DRAIN"}
     ]
 
     for en in expected:
@@ -905,6 +906,20 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <div class="metric-cell"><div class="metric-title">Temp</div><div class="metric-val">${d.temperature_c ? d.temperature_c + ' °C' : 'N/A'}</div></div>
             <div class="metric-cell"><div class="metric-title">Humidity</div><div class="metric-val">${d.humidity_percent ? d.humidity_percent + ' %' : 'N/A'}</div></div>
             <div class="metric-cell"><div class="metric-title">VOC Index</div><div class="metric-val">${d.voc_index || 'N/A'}</div></div>
+          `;
+        } else if (n.type === 'MQ135_DRAIN') {
+          const d = n.last_data || {};
+          const isOverflow = d.drain_overflow_detected === true;
+          const overflowText = isOverflow ? 'ACTIVE OVERFLOW' : 'NORMAL LEVEL';
+          const overflowColor = isOverflow ? '#f43f5e' : '#34d399';
+          const gasStatus = d.gas_level_status || 'NORMAL';
+          const gasColor = (gasStatus === 'HAZARDOUS') ? '#f43f5e' : ((gasStatus === 'ELEVATED') ? '#fbbf24' : '#34d399');
+          const ppm = (d.air_quality_ppm !== undefined) ? `${Number(d.air_quality_ppm).toFixed(1)} ppm` : 'NORMAL';
+          mHtml = `
+            <div class="metric-cell"><div class="metric-title">Nala Water Level</div><div class="metric-val" style="color: ${overflowColor};">${overflowText}</div></div>
+            <div class="metric-cell"><div class="metric-title">Sewer Gas</div><div class="metric-val" style="color: ${gasColor};">${gasStatus}</div></div>
+            <div class="metric-cell"><div class="metric-title">Gas Level</div><div class="metric-val">${ppm}</div></div>
+            <div class="metric-cell"><div class="metric-title">Instant Interrupt</div><div class="metric-val" style="color: #38bdf8;">Armed (0s Delay)</div></div>
           `;
         } else {
           mHtml = `

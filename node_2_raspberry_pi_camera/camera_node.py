@@ -25,8 +25,8 @@ import requests
 # CONFIGURATION
 # ============================================================
 
-# Replace with your Vercel deployment URL
-BACKEND_URL = os.environ.get("BACKEND_URL", "https://smart-city-kappa-three.vercel.app")
+# Live Render Deployment URL
+BACKEND_URL = os.environ.get("BACKEND_URL", "https://smart-city-r3hp.onrender.com")
 DEVICE_TOKEN = os.environ.get("DEVICE_TOKEN", "SHRIDEV")
 NODE_ID = "node_2_camera"
 
